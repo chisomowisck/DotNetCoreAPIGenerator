@@ -1,26 +1,49 @@
-using MyApiTemplate.Infrastructure.DependencyInjection; // will become <NewProjectName>.Infrastructure.DependencyInjection
+using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
+using MyApiTemplate.Infrastructure.DependencyInjection;
+using MyApiTemplate.Utils;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Global config
+builder.Services.AddSingleton<GlobalConfig>();
 
-builder.Services.AddGeneratedCrudServices();
-// Services
+// DbContext
+//builder.Services.AddDbContext<SampleDbContext>((services, options) =>
+//{
+//    var config = services.GetRequiredService<GlobalConfig>();
+//    options.UseSqlServer(config.ConnectionString);
+//});
+
+// MVC + Swagger
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
-// Generated services (no-ops until the generator adds *.g.cs)
+// Swagger config must be before builder.Build()
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Version = "v1",
+        Title = "Sample API",
+        Description = "API for Sample System"
+    });
+});
+
+// Generated services
 builder.Services.AddGeneratedCrudServices();
 
+// Build the app *after* all services are added
 var app = builder.Build();
-
-// Pipeline
-app.UseMiddleware<ExceptionHandlingMiddleware>(); // ensure the class is accessible by namespace or in global namespace
 
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Sample API v1");
+    });
 }
 
 app.MapControllers();

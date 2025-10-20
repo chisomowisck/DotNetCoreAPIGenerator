@@ -12,7 +12,7 @@
 
   <ItemGroup>
     <!-- Swagger UI + generator -->
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+	<PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.6" />
 
     <!-- Needed for dotnet-ef design-time services (reverse engineering etc.) -->
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.8" PrivateAssets="All" />

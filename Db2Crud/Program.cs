@@ -264,11 +264,11 @@ internal static class Program
         TryDelete(projectPath, "Services/CrudServices.g.cs");
         TryDelete(projectPath, "Dtos/CrudDtos.g.cs");
 
+        // Filter out views for API generation
+        var apiTables = tables.Where(t => !t.IsView).ToList();
 
-        foreach (var t in tables)
+        foreach (var t in apiTables)
         {
-
-
             if (string.IsNullOrWhiteSpace(t.Name)) continue;
 
             var cols = t.Columns ?? new List<ColumnInfo>();
@@ -286,10 +286,9 @@ internal static class Program
             Write(projectPath, $"Interfaces/I{t.Name}Service.g.cs", RenderTpl(interfaceTpl, itemModel), verbose);
             Write(projectPath, $"Services/{t.Name}Service.g.cs", RenderTpl(serviceTpl, itemModel), verbose);
             Write(projectPath, $"Dtos/{t.Name}Dtos.g.cs", RenderTpl(dtoTpl, itemModel), verbose);
-
         }
 
-        var diModel = new { tables, rootns, contextName };
+        var diModel = new { tables = apiTables, rootns, contextName };
         Write(projectPath, "Infrastructure/DependencyInjection/ServiceRegistration.g.cs",
               RenderTpl(diTpl, diModel), verbose);
     }
@@ -351,6 +350,7 @@ internal static class Program
 
         // Swagger so Program.cs compiles out-of-the-box
         try { Run("dotnet", "add package Swashbuckle.AspNetCore", projectPath, verbose); } catch { }
+        //try { Run("dotnet", "add package Swashbuckle.AspNetCore --version 6.6.2", projectPath, verbose); } catch { }
     }
 
     static void PrepareEmbeddedTemplates()

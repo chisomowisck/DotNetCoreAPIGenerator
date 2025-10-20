@@ -13,6 +13,7 @@ namespace Db2Crud
         public string? Schema { get; set; }                       // Table schema (e.g., dbo)
         public string? KeyColumn { get; set; }                    // single-key assumption; extend for composite keys
         public List<ColumnInfo> Columns { get; } = new();
+        public bool IsView { get; set; }
     }
 
     public sealed class ColumnInfo
@@ -45,27 +46,34 @@ namespace Db2Crud
 
                 // Prepared commands reused inside the loop
                 using var findSchemaCmd = new SqlCommand(@"
-SELECT TOP (1) TABLE_SCHEMA
-FROM INFORMATION_SCHEMA.TABLES
-WHERE TABLE_NAME = @t
-ORDER BY CASE WHEN TABLE_SCHEMA = 'dbo' THEN 0 ELSE 1 END, TABLE_SCHEMA;", cn);
+                    SELECT TOP (1) TABLE_SCHEMA
+                    FROM INFORMATION_SCHEMA.TABLES
+                    WHERE TABLE_NAME = @t
+                    ORDER BY CASE WHEN TABLE_SCHEMA = 'dbo' THEN 0 ELSE 1 END, TABLE_SCHEMA;", cn);
 
                 using var pkCmd = new SqlCommand(@"
-SELECT TOP (1) c.COLUMN_NAME
-FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS tc
-JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE c
-  ON c.CONSTRAINT_NAME = tc.CONSTRAINT_NAME
-WHERE tc.TABLE_NAME = @t
-  AND tc.TABLE_SCHEMA = @s
-  AND tc.CONSTRAINT_TYPE = 'PRIMARY KEY'
-ORDER BY c.ORDINAL_POSITION;", cn);
+                    SELECT TOP (1) c.COLUMN_NAME
+                    FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS tc
+                    JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE c
+                      ON c.CONSTRAINT_NAME = tc.CONSTRAINT_NAME
+                    WHERE tc.TABLE_NAME = @t
+                      AND tc.TABLE_SCHEMA = @s
+                      AND tc.CONSTRAINT_TYPE = 'PRIMARY KEY'
+                    ORDER BY c.ORDINAL_POSITION;", cn);
 
-                using var colCmd = new SqlCommand(@"
-SELECT COLUMN_NAME, IS_NULLABLE, DATA_TYPE
-FROM INFORMATION_SCHEMA.COLUMNS
-WHERE TABLE_NAME = @t
-  AND TABLE_SCHEMA = @s
-ORDER BY ORDINAL_POSITION;", cn);
+                  using var colCmd = new SqlCommand(@"
+                    SELECT COLUMN_NAME, IS_NULLABLE, DATA_TYPE
+                    FROM INFORMATION_SCHEMA.COLUMNS
+                    WHERE TABLE_NAME = @t
+                      AND TABLE_SCHEMA = @s
+                    ORDER BY ORDINAL_POSITION;", cn);
+
+                using var isViewCmd = new SqlCommand(@"
+                    SELECT CASE WHEN EXISTS (
+                      SELECT 1
+                      FROM INFORMATION_SCHEMA.VIEWS
+                      WHERE TABLE_SCHEMA = @s AND TABLE_NAME = @t
+                    ) THEN 1 ELSE 0 END;", cn);
 
                 foreach (var raw in tables)
                 {
@@ -81,7 +89,14 @@ ORDER BY ORDINAL_POSITION;", cn);
                         schema = (string?)findSchemaCmd.ExecuteScalar() ?? "dbo";
                     }
 
-                    var ti = new TableInfo { Name = table, Schema = schema };
+                    isViewCmd.Parameters.Clear();
+                    isViewCmd.Parameters.AddWithValue("@s", schema);
+                    isViewCmd.Parameters.AddWithValue("@t", table);
+                    var isView = (int)isViewCmd.ExecuteScalar() == 1;
+
+                    var ti = new TableInfo { Name = table, Schema = schema, IsView = isView };
+
+                    //var ti = new TableInfo { Name = table, Schema = schema };
 
                     // PK (single column)
                     pkCmd.Parameters.Clear();
