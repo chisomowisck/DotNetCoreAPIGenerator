@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <!-- Helpful for Swagger IncludeXmlComments(...) -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn> <!-- ignore missing XML docs warnings -->
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Swagger UI + generator -->
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+
+    <!-- Needed for dotnet-ef design-time services (reverse engineering etc.) -->
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.8" PrivateAssets="All" />
+
+    <!-- Optional: remove if you’re not using Minimal API annotations.
+         Swashbuckle is enough on its own. -->
+    <!-- <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.10" /> -->
+  </ItemGroup>
+
+  <!-- Optional: you don't need these Folder entries; SDK-style projects create
+       folders automatically when files appear. Safe to keep or remove. -->
+  <!--
+  <ItemGroup>
+    <Folder Include="Controllers\" />
+    <Folder Include="Infrastructure\Mapping\" />
+    <Folder Include="Interfaces\" />
+    <Folder Include="Dtos\" />
+    <Folder Include="Data\" />
+    <Folder Include="Entities\" />
+    <Folder Include="Services\" />
+  </ItemGroup>
+  -->
+
+</Project>

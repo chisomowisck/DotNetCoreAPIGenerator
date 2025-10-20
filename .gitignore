@@ -1,0 +1,9 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/Db2Crud/bin/Release
+/Db2Crud/obj
+/.vs
+/MyApiTemplate/obj
+/Store.Api

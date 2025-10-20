@@ -1,0 +1,81 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Your Name or Org",
+  "classifications": ["Web", "API", "Entity Framework", "Generator"],
+  "identity": "Company.MyApiTemplate",
+  "name": "Company DB-First API",
+  "shortName": "myapi",
+  "description": "ASP.NET Core API template that can DB-first generate CRUD (DTOs/Services/Controllers).",
+  "tags": { "language": "C#", "type": "project" },
+  "sourceName": "MyApiTemplate",
+  "preferNameDirectory": true,
+
+  "symbols": {
+    "provider": {
+      "type": "parameter",
+      "datatype": "string",
+      "defaultValue": "Microsoft.EntityFrameworkCore.SqlServer",
+      "description": "EF Core provider package (e.g. Microsoft.EntityFrameworkCore.SqlServer)"
+    },
+    "conn": {
+      "type": "parameter",
+      "datatype": "string",
+      "defaultValue": "Server=.;Database=MyDb;Trusted_Connection=True;TrustServerCertificate=True",
+      "description": "Database connection string"
+    },
+    "contextName": {
+      "type": "parameter",
+      "datatype": "string",
+      "defaultValue": "AppDbContext",
+      "description": "DbContext name to generate"
+    },
+    "include": {
+      "type": "parameter",
+      "datatype": "string",
+      "defaultValue": "",
+      "description": "Comma-separated tables to include (unused in this basic script; leave empty for all)"
+    }
+  },
+
+  "primaryOutputs": [{ "path": "MyApiTemplate.csproj" }],
+
+  "postActions": [
+    {
+      "description": "Run DB→CRUD generator (Windows)",
+      "actionId": "210D431B-A78B-4D2F-B762-4ED3E3EA9025",
+      "args": {
+        "executable": "cmd",
+        "args": "/c scripts\\bootstrap.cmd \"$(provider)\" \"$(conn)\" \"$(contextName)\" \".\""
+      },
+      "continueOnError": true,
+      "manualInstructions": [
+        { "text": "On Windows: scripts\\bootstrap.cmd \"<provider>\" \"<conn>\" \"<contextName>\" \".\"" }
+      ],
+      "condition": "(OS == \"Windows_NT\")"
+    },
+    {
+      "description": "Run DB→CRUD generator (macOS/Linux)",
+      "actionId": "210D431B-A78B-4D2F-B762-4ED3E3EA9025",
+      "args": {
+        "executable": "bash",
+        "args": "scripts/bootstrap.sh \"$(provider)\" \"$(conn)\" \"$(contextName)\" \".\""
+      },
+      "continueOnError": true,
+      "manualInstructions": [
+        { "text": "On macOS/Linux: bash scripts/bootstrap.sh \"<provider>\" \"<conn>\" \"<contextName>\" \".\"" }
+      ],
+      "condition": "(OS != \"Windows_NT\")"
+    },
+    {
+      "description": "If automatic run is blocked, run these steps manually:",
+      "actionId": "210D431B-A78B-4D2F-B762-4ED3E3EA9025",
+      "manualInstructions": [
+        { "text": "1) cd <project-name>" },
+        { "text": "2) scripts\\bootstrap.cmd \"<provider>\" \"<conn>\" \"<contextName>\" \".\"   (Windows)" },
+        { "text": "   or: bash scripts/bootstrap.sh \"<provider>\" \"<conn>\" \"<contextName>\" \".\"   (macOS/Linux)" },
+        { "text": "3) dotnet run" }
+      ],
+      "continueOnError": true
+    }
+  ]
+}
