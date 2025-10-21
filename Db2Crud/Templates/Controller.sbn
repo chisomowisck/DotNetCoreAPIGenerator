@@ -1,0 +1,33 @@
+using Microsoft.AspNetCore.Mvc;
+using {{ rootns }}.Common;
+using {{ rootns }}.Interfaces;
+
+namespace {{ rootns }}.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+public partial class {{ t.Name }}Controller : ControllerBase
+{
+    private readonly I{{ t.Name }}Service _svc;
+    public {{ t.Name }}Controller(I{{ t.Name }}Service svc) => _svc = svc;
+
+    [HttpGet]
+    public async Task<ActionResult<ApiResponse<IEnumerable<{{ rootns }}.Dtos.{{ t.Name }}.{{ t.Name }}ReadDto>>>> GetAll()
+        => Ok(await _svc.GetAllAsync());
+
+    [HttpGet("{id}")]
+    public async Task<ActionResult<ApiResponse<{{ rootns }}.Dtos.{{ t.Name }}.{{ t.Name }}ReadDto>>> GetById({{ t.KeyClrType }} id)
+        => Ok(await _svc.GetByIdAsync(id));
+
+    [HttpPost]
+    public async Task<ActionResult<ApiResponse<{{ rootns }}.Dtos.{{ t.Name }}.{{ t.Name }}ReadDto>>> Create([FromBody] {{ rootns }}.Dtos.{{ t.Name }}.{{ t.Name }}CreateDto dto)
+        => Ok(await _svc.CreateAsync(dto));
+
+    [HttpPut("{id}")]
+    public async Task<ActionResult<ApiResponse<{{ rootns }}.Dtos.{{ t.Name }}.{{ t.Name }}ReadDto>>> Update({{ t.KeyClrType }} id, [FromBody] {{ rootns }}.Dtos.{{ t.Name }}.{{ t.Name }}UpdateDto dto)
+        => Ok(await _svc.UpdateAsync(id, dto));
+
+    [HttpDelete("{id}")]
+    public async Task<ActionResult<ApiResponse<bool>>> Delete({{ t.KeyClrType }} id)
+        => Ok(await _svc.DeleteAsync(id));
+}

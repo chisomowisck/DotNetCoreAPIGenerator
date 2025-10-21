@@ -1,0 +1,23 @@
+namespace {{ rootns }}.Dtos.{{ t.Name }};
+
+public record {{ t.Name }}ReadDto(
+{{~ for c in t.Columns ~}}
+    {{ c.ClrType }} {{ c.CsName ?? c.Name }}{{ if !for.last }},{{ end }}
+{{~ end ~}}
+);
+
+public record {{ t.Name }}CreateDto(
+{{~ for c in t.Columns ~}}
+    {{- if c.Name != t.KeyColumn -}}
+    {{ c.ClrType }} {{ c.CsName ?? c.Name }}{{ if !for.last }},{{ end }}
+    {{- end -}}
+{{~ end ~}}
+);
+
+public record {{ t.Name }}UpdateDto(
+{{~ for c in t.Columns ~}}
+    {{- if c.Name != t.KeyColumn -}}
+    {{ c.ClrType }} {{ c.CsName ?? c.Name }}{{ if !for.last }},{{ end }}
+    {{- end -}}
+{{~ end ~}}
+);

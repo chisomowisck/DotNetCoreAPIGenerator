@@ -7,3 +7,5 @@
 /.vs
 /MyApiTemplate/obj
 /Store.Api
+/Db2Crud/bin/Debug/net8.0
+/MyApiTemplate/bin/Debug/net8.0

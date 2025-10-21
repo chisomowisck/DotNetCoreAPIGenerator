@@ -1,0 +1,13 @@
+using Microsoft.Extensions.DependencyInjection;
+
+namespace {{ rootns }}.Infrastructure.DependencyInjection;
+
+public static partial class ServiceRegistration
+{
+    static partial void AddGeneratedCrudServicesInternal(IServiceCollection services)
+    {
+        {{~ for t in tables ~}}
+        services.AddScoped<{{ rootns }}.Interfaces.I{{ t.Name }}Service, {{ rootns }}.Services.{{ t.Name }}Service>();
+        {{~ end ~}}
+    }
+}

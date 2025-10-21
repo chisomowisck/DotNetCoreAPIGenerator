@@ -1,0 +1,12 @@
+using {{ rootns }}.Common;
+
+namespace {{ rootns }}.Interfaces;
+
+public interface I{{ t.Name }}Service
+{
+    Task<ApiResponse<IEnumerable<{{ rootns }}.Dtos.{{ t.Name }}.{{ t.Name }}ReadDto>>> GetAllAsync();
+    Task<ApiResponse<{{ rootns }}.Dtos.{{ t.Name }}.{{ t.Name }}ReadDto>> GetByIdAsync({{ t.KeyClrType }} id);
+    Task<ApiResponse<{{ rootns }}.Dtos.{{ t.Name }}.{{ t.Name }}ReadDto>> CreateAsync({{ rootns }}.Dtos.{{ t.Name }}.{{ t.Name }}CreateDto dto);
+    Task<ApiResponse<{{ rootns }}.Dtos.{{ t.Name }}.{{ t.Name }}ReadDto>> UpdateAsync({{ t.KeyClrType }} id, {{ rootns }}.Dtos.{{ t.Name }}.{{ t.Name }}UpdateDto dto);
+    Task<ApiResponse<bool>> DeleteAsync({{ t.KeyClrType }} id);
+}

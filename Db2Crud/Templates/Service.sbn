@@ -1,0 +1,75 @@
+using Microsoft.EntityFrameworkCore;
+using {{ rootns }}.Common;
+using {{ rootns }}.Data;
+using {{ rootns }}.Interfaces;
+
+namespace {{ rootns }}.Services;
+
+[System.CodeDom.Compiler.GeneratedCode("db2crud","1.0.0")]
+public partial class {{ t.Name }}Service : I{{ t.Name }}Service
+{
+    private readonly {{ contextName }} _db;
+    public {{ t.Name }}Service({{ contextName }} db) => _db = db;
+
+    public async Task<ApiResponse<IEnumerable<{{ rootns }}.Dtos.{{ t.Name }}.{{ t.Name }}ReadDto>>> GetAllAsync()
+    {
+        var items = await _db.Set<{{ rootns }}.Entities.{{ t.Name }}>().AsNoTracking().ToListAsync();
+        return ApiResponse<IEnumerable<{{ rootns }}.Dtos.{{ t.Name }}.{{ t.Name }}ReadDto>>.Ok(items.Select(MapToReadDto));
+    }
+
+    public async Task<ApiResponse<{{ rootns }}.Dtos.{{ t.Name }}.{{ t.Name }}ReadDto>> GetByIdAsync({{ t.KeyClrType }} id)
+    {
+        var entity = await _db.Set<{{ rootns }}.Entities.{{ t.Name }}>().FindAsync(id);
+        if (entity == null) return ApiResponse<{{ rootns }}.Dtos.{{ t.Name }}.{{ t.Name }}ReadDto>.Fail("Not found");
+        return ApiResponse<{{ rootns }}.Dtos.{{ t.Name }}.{{ t.Name }}ReadDto>.Ok(MapToReadDto(entity));
+    }
+
+    public async Task<ApiResponse<{{ rootns }}.Dtos.{{ t.Name }}.{{ t.Name }}ReadDto>> CreateAsync({{ rootns }}.Dtos.{{ t.Name }}.{{ t.Name }}CreateDto dto)
+    {
+        var entity = MapFromCreateDto(dto);
+        _db.Set<{{ rootns }}.Entities.{{ t.Name }}>().Add(entity);
+        await _db.SaveChangesAsync();
+        return ApiResponse<{{ rootns }}.Dtos.{{ t.Name }}.{{ t.Name }}ReadDto>.Ok(MapToReadDto(entity));
+    }
+
+    public async Task<ApiResponse<{{ rootns }}.Dtos.{{ t.Name }}.{{ t.Name }}ReadDto>> UpdateAsync({{ t.KeyClrType }} id, {{ rootns }}.Dtos.{{ t.Name }}.{{ t.Name }}UpdateDto dto)
+    {
+        var entity = await _db.Set<{{ rootns }}.Entities.{{ t.Name }}>().FindAsync(id);
+        if (entity == null) return ApiResponse<{{ rootns }}.Dtos.{{ t.Name }}.{{ t.Name }}ReadDto>.Fail("Not found");
+        MapIntoEntity(entity, dto);
+        await _db.SaveChangesAsync();
+        return ApiResponse<{{ rootns }}.Dtos.{{ t.Name }}.{{ t.Name }}ReadDto>.Ok(MapToReadDto(entity));
+    }
+
+    public async Task<ApiResponse<bool>> DeleteAsync({{ t.KeyClrType }} id)
+    {
+        var entity = await _db.Set<{{ rootns }}.Entities.{{ t.Name }}>().FindAsync(id);
+        if (entity == null) return ApiResponse<bool>.Fail("Not found");
+        _db.Remove(entity);
+        await _db.SaveChangesAsync();
+        return ApiResponse<bool>.Ok(true);
+    }
+
+    private static {{ rootns }}.Dtos.{{ t.Name }}.{{ t.Name }}ReadDto MapToReadDto({{ rootns }}.Entities.{{ t.Name }} e) => new {{ rootns }}.Dtos.{{ t.Name }}.{{ t.Name }}ReadDto(
+        {{~ for c in t.Columns ~}}
+        e.{{ c.CsName ?? c.Name }}{{ if !for.last }},{{ end }}
+        {{~ end ~}}
+    );
+
+    private static {{ rootns }}.Entities.{{ t.Name }} MapFromCreateDto({{ rootns }}.Dtos.{{ t.Name }}.{{ t.Name }}CreateDto d) => new {{ rootns }}.Entities.{{ t.Name }} {
+        {{~ for c in t.Columns ~}}
+        {{- if c.Name != t.KeyColumn -}}
+        {{ c.CsName ?? c.Name }} = d.{{ c.CsName ?? c.Name }}{{ if !for.last }},{{ end }}
+        {{- end -}}
+        {{~ end ~}}
+    };
+
+    private static void MapIntoEntity({{ rootns }}.Entities.{{ t.Name }} e, {{ rootns }}.Dtos.{{ t.Name }}.{{ t.Name }}UpdateDto d)
+    {
+        {{~ for c in t.Columns ~}}
+        {{- if c.Name != t.KeyColumn -}}
+        e.{{ c.CsName ?? c.Name }} = d.{{ c.CsName ?? c.Name }};
+        {{- end -}}
+        {{~ end ~}}
+    }
+}
