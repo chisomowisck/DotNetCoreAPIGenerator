@@ -4,9 +4,9 @@ namespace {{ rootns }}.Interfaces;
 
 public interface I{{ t.Name }}Service
 {
-    Task<ApiResponse<IEnumerable<{{ rootns }}.Dtos.{{ t.Name }}.{{ t.Name }}ReadDto>>> GetAllAsync();
-    Task<ApiResponse<{{ rootns }}.Dtos.{{ t.Name }}.{{ t.Name }}ReadDto>> GetByIdAsync({{ t.KeyClrType }} id);
-    Task<ApiResponse<{{ rootns }}.Dtos.{{ t.Name }}.{{ t.Name }}ReadDto>> CreateAsync({{ rootns }}.Dtos.{{ t.Name }}.{{ t.Name }}CreateDto dto);
-    Task<ApiResponse<{{ rootns }}.Dtos.{{ t.Name }}.{{ t.Name }}ReadDto>> UpdateAsync({{ t.KeyClrType }} id, {{ rootns }}.Dtos.{{ t.Name }}.{{ t.Name }}UpdateDto dto);
+    Task<ApiResponse<IEnumerable<{{ rootns }}.Dtos.{{ t.EntityName }}.{{ t.EntityName }}ReadDto>>> GetAllAsync();
+    Task<ApiResponse<{{ rootns }}.Dtos.{{ t.EntityName }}.{{ t.EntityName }}ReadDto>> GetByIdAsync({{ t.KeyClrType }} id);
+    Task<ApiResponse<{{ rootns }}.Dtos.{{ t.EntityName }}.{{ t.EntityName }}ReadDto>> CreateAsync({{ rootns }}.Dtos.{{ t.EntityName }}.{{ t.EntityName }}CreateDto dto);
+    Task<ApiResponse<{{ rootns }}.Dtos.{{ t.EntityName }}.{{ t.EntityName }}ReadDto>> UpdateAsync({{ t.KeyClrType }} id, {{ rootns }}.Dtos.{{ t.EntityName }}.{{ t.EntityName }}UpdateDto dto);
     Task<ApiResponse<bool>> DeleteAsync({{ t.KeyClrType }} id);
 }

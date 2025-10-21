@@ -54,175 +54,175 @@ internal sealed class TemplateRepository
         => File.WriteAllText(PathFor(name), content);
 
     // --- template contents ---------------------------------------------------
-
     private const string ControllerTpl = """
-using Microsoft.AspNetCore.Mvc;
-using {{ rootns }}.Common;
-using {{ rootns }}.Interfaces;
+        using Microsoft.AspNetCore.Mvc;
+        using {{ rootns }}.Common;
+        using {{ rootns }}.Interfaces;
 
-namespace {{ rootns }}.Controllers;
+        namespace {{ rootns }}.Controllers;
 
-[ApiController]
-[Route("api/[controller]")]
-public partial class {{ t.Name }}Controller : ControllerBase
-{
-    private readonly I{{ t.Name }}Service _svc;
-    public {{ t.Name }}Controller(I{{ t.Name }}Service svc) => _svc = svc;
+        [ApiController]
+        [Route("api/[controller]")]
+        public partial class {{ t.EntityName }}Controller : ControllerBase
+        {
+            private readonly I{{ t.EntityName }}Service _svc;
+            public {{ t.EntityName }}Controller(I{{ t.EntityName }}Service svc) => _svc = svc;
 
-    [HttpGet]
-    public async Task<ActionResult<ApiResponse<IEnumerable<{{ rootns }}.Dtos.{{ t.Name }}.{{ t.Name }}ReadDto>>>> GetAll()
-        => Ok(await _svc.GetAllAsync());
+            [HttpGet]
+            public async Task<ActionResult<ApiResponse<IEnumerable<{{ rootns }}.Dtos.{{ t.EntityName }}.{{ t.EntityName }}ReadDto>>>> GetAll()
+                => Ok(await _svc.GetAllAsync());
 
-    [HttpGet("{id}")]
-    public async Task<ActionResult<ApiResponse<{{ rootns }}.Dtos.{{ t.Name }}.{{ t.Name }}ReadDto>>> GetById({{ t.KeyClrType }} id)
-        => Ok(await _svc.GetByIdAsync(id));
+            [HttpGet("{id}")]
+            public async Task<ActionResult<ApiResponse<{{ rootns }}.Dtos.{{ t.EntityName }}.{{ t.EntityName }}ReadDto>>> GetById({{ t.KeyClrType }} id)
+                => Ok(await _svc.GetByIdAsync(id));
 
-    [HttpPost]
-    public async Task<ActionResult<ApiResponse<{{ rootns }}.Dtos.{{ t.Name }}.{{ t.Name }}ReadDto>>> Create([FromBody] {{ rootns }}.Dtos.{{ t.Name }}.{{ t.Name }}CreateDto dto)
-        => Ok(await _svc.CreateAsync(dto));
+            [HttpPost]
+            public async Task<ActionResult<ApiResponse<{{ rootns }}.Dtos.{{ t.EntityName }}.{{ t.EntityName }}ReadDto>>> Create([FromBody] {{ rootns }}.Dtos.{{ t.EntityName }}.{{ t.EntityName }}CreateDto dto)
+                => Ok(await _svc.CreateAsync(dto));
 
-    [HttpPut("{id}")]
-    public async Task<ActionResult<ApiResponse<{{ rootns }}.Dtos.{{ t.Name }}.{{ t.Name }}ReadDto>>> Update({{ t.KeyClrType }} id, [FromBody] {{ rootns }}.Dtos.{{ t.Name }}.{{ t.Name }}UpdateDto dto)
-        => Ok(await _svc.UpdateAsync(id, dto));
+            [HttpPut("{id}")]
+            public async Task<ActionResult<ApiResponse<{{ rootns }}.Dtos.{{ t.EntityName }}.{{ t.EntityName }}ReadDto>>> Update({{ t.KeyClrType }} id, [FromBody] {{ rootns }}.Dtos.{{ t.EntityName }}.{{ t.EntityName }}UpdateDto dto)
+                => Ok(await _svc.UpdateAsync(id, dto));
 
-    [HttpDelete("{id}")]
-    public async Task<ActionResult<ApiResponse<bool>>> Delete({{ t.KeyClrType }} id)
-        => Ok(await _svc.DeleteAsync(id));
-}
-""";
+            [HttpDelete("{id}")]
+            public async Task<ActionResult<ApiResponse<bool>>> Delete({{ t.KeyClrType }} id)
+                => Ok(await _svc.DeleteAsync(id));
+        }
+        """;
 
-    private const string InterfaceTpl = """
-using {{ rootns }}.Common;
+            private const string InterfaceTpl = """
+        using {{ rootns }}.Common;
 
-namespace {{ rootns }}.Interfaces;
+        namespace {{ rootns }}.Interfaces;
 
-public interface I{{ t.Name }}Service
-{
-    Task<ApiResponse<IEnumerable<{{ rootns }}.Dtos.{{ t.Name }}.{{ t.Name }}ReadDto>>> GetAllAsync();
-    Task<ApiResponse<{{ rootns }}.Dtos.{{ t.Name }}.{{ t.Name }}ReadDto>> GetByIdAsync({{ t.KeyClrType }} id);
-    Task<ApiResponse<{{ rootns }}.Dtos.{{ t.Name }}.{{ t.Name }}ReadDto>> CreateAsync({{ rootns }}.Dtos.{{ t.Name }}.{{ t.Name }}CreateDto dto);
-    Task<ApiResponse<{{ rootns }}.Dtos.{{ t.Name }}.{{ t.Name }}ReadDto>> UpdateAsync({{ t.KeyClrType }} id, {{ rootns }}.Dtos.{{ t.Name }}.{{ t.Name }}UpdateDto dto);
-    Task<ApiResponse<bool>> DeleteAsync({{ t.KeyClrType }} id);
-}
-""";
+        public interface I{{ t.EntityName }}Service
+        {
+            Task<ApiResponse<IEnumerable<{{ rootns }}.Dtos.{{ t.EntityName }}.{{ t.EntityName }}ReadDto>>> GetAllAsync();
+            Task<ApiResponse<{{ rootns }}.Dtos.{{ t.EntityName }}.{{ t.EntityName }}ReadDto>> GetByIdAsync({{ t.KeyClrType }} id);
+            Task<ApiResponse<{{ rootns }}.Dtos.{{ t.EntityName }}.{{ t.EntityName }}ReadDto>> CreateAsync({{ rootns }}.Dtos.{{ t.EntityName }}.{{ t.EntityName }}CreateDto dto);
+            Task<ApiResponse<{{ rootns }}.Dtos.{{ t.EntityName }}.{{ t.EntityName }}ReadDto>> UpdateAsync({{ t.KeyClrType }} id, {{ rootns }}.Dtos.{{ t.EntityName }}.{{ t.EntityName }}UpdateDto dto);
+            Task<ApiResponse<bool>> DeleteAsync({{ t.KeyClrType }} id);
+        }
+        """;
 
-    private const string ServiceTpl = """
-using Microsoft.EntityFrameworkCore;
-using {{ rootns }}.Common;
-using {{ rootns }}.Data;
-using {{ rootns }}.Interfaces;
+            private const string ServiceTpl = """
+        using Microsoft.EntityFrameworkCore;
+        using {{ rootns }}.Common;
+        using {{ rootns }}.Data;
+        using {{ rootns }}.Interfaces;
 
-namespace {{ rootns }}.Services;
+        namespace {{ rootns }}.Services;
 
-[System.CodeDom.Compiler.GeneratedCode("db2crud","1.0.0")]
-public partial class {{ t.Name }}Service : I{{ t.Name }}Service
-{
-    private readonly {{ contextName }} _db;
-    public {{ t.Name }}Service({{ contextName }} db) => _db = db;
+        [System.CodeDom.Compiler.GeneratedCode("db2crud","1.0.0")]
+        public partial class {{ t.EntityName }}Service : I{{ t.EntityName }}Service
+        {
+            private readonly {{ contextName }} _db;
+            public {{ t.EntityName }}Service({{ contextName }} db) => _db = db;
 
-    public async Task<ApiResponse<IEnumerable<{{ rootns }}.Dtos.{{ t.Name }}.{{ t.Name }}ReadDto>>> GetAllAsync()
-    {
-        var items = await _db.Set<{{ rootns }}.Entities.{{ t.Name }}>().AsNoTracking().ToListAsync();
-        return ApiResponse<IEnumerable<{{ rootns }}.Dtos.{{ t.Name }}.{{ t.Name }}ReadDto>>.Ok(items.Select(MapToReadDto));
-    }
+            public async Task<ApiResponse<IEnumerable<{{ rootns }}.Dtos.{{ t.EntityName }}.{{ t.EntityName }}ReadDto>>> GetAllAsync()
+            {
+                var items = await _db.Set<{{ rootns }}.Entities.{{ t.EntityName }}>().AsNoTracking().ToListAsync();
+                return ApiResponse<IEnumerable<{{ rootns }}.Dtos.{{ t.EntityName }}.{{ t.EntityName }}ReadDto>>.Ok(items.Select(MapToReadDto));
+            }
 
-    public async Task<ApiResponse<{{ rootns }}.Dtos.{{ t.Name }}.{{ t.Name }}ReadDto>> GetByIdAsync({{ t.KeyClrType }} id)
-    {
-        var entity = await _db.Set<{{ rootns }}.Entities.{{ t.Name }}>().FindAsync(id);
-        if (entity == null) return ApiResponse<{{ rootns }}.Dtos.{{ t.Name }}.{{ t.Name }}ReadDto>.Fail("Not found");
-        return ApiResponse<{{ rootns }}.Dtos.{{ t.Name }}.{{ t.Name }}ReadDto>.Ok(MapToReadDto(entity));
-    }
+            public async Task<ApiResponse<{{ rootns }}.Dtos.{{ t.EntityName }}.{{ t.EntityName }}ReadDto>> GetByIdAsync({{ t.KeyClrType }} id)
+            {
+                var entity = await _db.Set<{{ rootns }}.Entities.{{ t.EntityName }}>().FindAsync(id);
+                if (entity == null) return ApiResponse<{{ rootns }}.Dtos.{{ t.EntityName }}.{{ t.EntityName }}ReadDto>.Fail("Not found");
+                return ApiResponse<{{ rootns }}.Dtos.{{ t.EntityName }}.{{ t.EntityName }}ReadDto>.Ok(MapToReadDto(entity));
+            }
 
-    public async Task<ApiResponse<{{ rootns }}.Dtos.{{ t.Name }}.{{ t.Name }}ReadDto>> CreateAsync({{ rootns }}.Dtos.{{ t.Name }}.{{ t.Name }}CreateDto dto)
-    {
-        var entity = MapFromCreateDto(dto);
-        _db.Set<{{ rootns }}.Entities.{{ t.Name }}>().Add(entity);
-        await _db.SaveChangesAsync();
-        return ApiResponse<{{ rootns }}.Dtos.{{ t.Name }}.{{ t.Name }}ReadDto>.Ok(MapToReadDto(entity));
-    }
+            public async Task<ApiResponse<{{ rootns }}.Dtos.{{ t.EntityName }}.{{ t.EntityName }}ReadDto>> CreateAsync({{ rootns }}.Dtos.{{ t.EntityName }}.{{ t.EntityName }}CreateDto dto)
+            {
+                var entity = MapFromCreateDto(dto);
+                _db.Set<{{ rootns }}.Entities.{{ t.EntityName }}>().Add(entity);
+                await _db.SaveChangesAsync();
+                return ApiResponse<{{ rootns }}.Dtos.{{ t.EntityName }}.{{ t.EntityName }}ReadDto>.Ok(MapToReadDto(entity));
+            }
 
-    public async Task<ApiResponse<{{ rootns }}.Dtos.{{ t.Name }}.{{ t.Name }}ReadDto>> UpdateAsync({{ t.KeyClrType }} id, {{ rootns }}.Dtos.{{ t.Name }}.{{ t.Name }}UpdateDto dto)
-    {
-        var entity = await _db.Set<{{ rootns }}.Entities.{{ t.Name }}>().FindAsync(id);
-        if (entity == null) return ApiResponse<{{ rootns }}.Dtos.{{ t.Name }}.{{ t.Name }}ReadDto>.Fail("Not found");
-        MapIntoEntity(entity, dto);
-        await _db.SaveChangesAsync();
-        return ApiResponse<{{ rootns }}.Dtos.{{ t.Name }}.{{ t.Name }}ReadDto>.Ok(MapToReadDto(entity));
-    }
+            public async Task<ApiResponse<{{ rootns }}.Dtos.{{ t.EntityName }}.{{ t.EntityName }}ReadDto>> UpdateAsync({{ t.KeyClrType }} id, {{ rootns }}.Dtos.{{ t.EntityName }}.{{ t.EntityName }}UpdateDto dto)
+            {
+                var entity = await _db.Set<{{ rootns }}.Entities.{{ t.EntityName }}>().FindAsync(id);
+                if (entity == null) return ApiResponse<{{ rootns }}.Dtos.{{ t.EntityName }}.{{ t.EntityName }}ReadDto>.Fail("Not found");
+                MapIntoEntity(entity, dto);
+                await _db.SaveChangesAsync();
+                return ApiResponse<{{ rootns }}.Dtos.{{ t.EntityName }}.{{ t.EntityName }}ReadDto>.Ok(MapToReadDto(entity));
+            }
 
-    public async Task<ApiResponse<bool>> DeleteAsync({{ t.KeyClrType }} id)
-    {
-        var entity = await _db.Set<{{ rootns }}.Entities.{{ t.Name }}>().FindAsync(id);
-        if (entity == null) return ApiResponse<bool>.Fail("Not found");
-        _db.Remove(entity);
-        await _db.SaveChangesAsync();
-        return ApiResponse<bool>.Ok(true);
-    }
+            public async Task<ApiResponse<bool>> DeleteAsync({{ t.KeyClrType }} id)
+            {
+                var entity = await _db.Set<{{ rootns }}.Entities.{{ t.EntityName }}>().FindAsync(id);
+                if (entity == null) return ApiResponse<bool>.Fail("Not found");
+                _db.Remove(entity);
+                await _db.SaveChangesAsync();
+                return ApiResponse<bool>.Ok(true);
+            }
 
-    private static {{ rootns }}.Dtos.{{ t.Name }}.{{ t.Name }}ReadDto MapToReadDto({{ rootns }}.Entities.{{ t.Name }} e) => new {{ rootns }}.Dtos.{{ t.Name }}.{{ t.Name }}ReadDto(
+            private static {{ rootns }}.Dtos.{{ t.EntityName }}.{{ t.EntityName }}ReadDto MapToReadDto({{ rootns }}.Entities.{{ t.EntityName }} e) => new {{ rootns }}.Dtos.{{ t.EntityName }}.{{ t.EntityName }}ReadDto(
+                {{~ for c in t.Columns ~}}
+                e.{{ c.CsName ?? c.Name }}{{ if !for.last }},{{ end }}
+                {{~ end ~}}
+            );
+
+            private static {{ rootns }}.Entities.{{ t.EntityName }} MapFromCreateDto({{ rootns }}.Dtos.{{ t.EntityName }}.{{ t.EntityName }}CreateDto d) => new {{ rootns }}.Entities.{{ t.EntityName }} {
+                {{~ for c in t.Columns ~}}
+                {{- if c.Name != t.KeyColumn -}}
+                {{ c.CsName ?? c.Name }} = d.{{ c.CsName ?? c.Name }}{{ if !for.last }},{{ end }}
+                {{- end -}}
+                {{~ end ~}}
+            };
+
+            private static void MapIntoEntity({{ rootns }}.Entities.{{ t.EntityName }} e, {{ rootns }}.Dtos.{{ t.EntityName }}.{{ t.EntityName }}UpdateDto d)
+            {
+                {{~ for c in t.Columns ~}}
+                {{- if c.Name != t.KeyColumn -}}
+                e.{{ c.CsName ?? c.Name }} = d.{{ c.CsName ?? c.Name }};
+                {{- end -}}
+                {{~ end ~}}
+            }
+        }
+        """;
+
+            private const string DtosTpl = """
+        namespace {{ rootns }}.Dtos.{{ t.EntityName }};
+
+        public record {{ t.EntityName }}ReadDto(
         {{~ for c in t.Columns ~}}
-        e.{{ c.CsName ?? c.Name }}{{ if !for.last }},{{ end }}
+            {{ c.ClrType }} {{ c.CsName ?? c.Name }}{{ if !for.last }},{{ end }}
         {{~ end ~}}
-    );
+        );
 
-    private static {{ rootns }}.Entities.{{ t.Name }} MapFromCreateDto({{ rootns }}.Dtos.{{ t.Name }}.{{ t.Name }}CreateDto d) => new {{ rootns }}.Entities.{{ t.Name }} {
+        public record {{ t.EntityName }}CreateDto(
         {{~ for c in t.Columns ~}}
-        {{- if c.Name != t.KeyColumn -}}
-        {{ c.CsName ?? c.Name }} = d.{{ c.CsName ?? c.Name }}{{ if !for.last }},{{ end }}
-        {{- end -}}
+            {{- if c.Name != t.KeyColumn -}}
+            {{ c.ClrType }} {{ c.CsName ?? c.Name }}{{ if !for.last }},{{ end }}
+            {{- end -}}
         {{~ end ~}}
-    };
+        );
 
-    private static void MapIntoEntity({{ rootns }}.Entities.{{ t.Name }} e, {{ rootns }}.Dtos.{{ t.Name }}.{{ t.Name }}UpdateDto d)
-    {
+        public record {{ t.EntityName }}UpdateDto(
         {{~ for c in t.Columns ~}}
-        {{- if c.Name != t.KeyColumn -}}
-        e.{{ c.CsName ?? c.Name }} = d.{{ c.CsName ?? c.Name }};
-        {{- end -}}
+            {{- if c.Name != t.KeyColumn -}}
+            {{ c.ClrType }} {{ c.CsName ?? c.Name }}{{ if !for.last }},{{ end }}
+            {{- end -}}
         {{~ end ~}}
-    }
-}
+        );
+        """;
+
+            private const string DiTpl = """
+        using Microsoft.Extensions.DependencyInjection;
+
+        namespace {{ rootns }}.Infrastructure.DependencyInjection;
+
+        public static partial class ServiceRegistration
+        {
+            static partial void AddGeneratedCrudServicesInternal(IServiceCollection services)
+            {
+                {{~ for t in tables ~}}
+                services.AddScoped<{{ rootns }}.Interfaces.I{{ t.EntityName }}Service, {{ rootns }}.Services.{{ t.EntityName }}Service>();
+                {{~ end ~}}
+            }
+        }
 """;
 
-    private const string DtosTpl = """
-namespace {{ rootns }}.Dtos.{{ t.Name }};
-
-public record {{ t.Name }}ReadDto(
-{{~ for c in t.Columns ~}}
-    {{ c.ClrType }} {{ c.CsName ?? c.Name }}{{ if !for.last }},{{ end }}
-{{~ end ~}}
-);
-
-public record {{ t.Name }}CreateDto(
-{{~ for c in t.Columns ~}}
-    {{- if c.Name != t.KeyColumn -}}
-    {{ c.ClrType }} {{ c.CsName ?? c.Name }}{{ if !for.last }},{{ end }}
-    {{- end -}}
-{{~ end ~}}
-);
-
-public record {{ t.Name }}UpdateDto(
-{{~ for c in t.Columns ~}}
-    {{- if c.Name != t.KeyColumn -}}
-    {{ c.ClrType }} {{ c.CsName ?? c.Name }}{{ if !for.last }},{{ end }}
-    {{- end -}}
-{{~ end ~}}
-);
-""";
-
-    private const string DiTpl = """
-using Microsoft.Extensions.DependencyInjection;
-
-namespace {{ rootns }}.Infrastructure.DependencyInjection;
-
-public static partial class ServiceRegistration
-{
-    static partial void AddGeneratedCrudServicesInternal(IServiceCollection services)
-    {
-        {{~ for t in tables ~}}
-        services.AddScoped<{{ rootns }}.Interfaces.I{{ t.Name }}Service, {{ rootns }}.Services.{{ t.Name }}Service>();
-        {{~ end ~}}
-    }
-}
-""";
 }

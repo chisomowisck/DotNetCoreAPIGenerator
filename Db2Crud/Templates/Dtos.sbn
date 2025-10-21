@@ -1,12 +1,12 @@
-namespace {{ rootns }}.Dtos.{{ t.Name }};
+namespace {{ rootns }}.Dtos.{{ t.EntityName }};
 
-public record {{ t.Name }}ReadDto(
+public record {{ t.EntityName }}ReadDto(
 {{~ for c in t.Columns ~}}
     {{ c.ClrType }} {{ c.CsName ?? c.Name }}{{ if !for.last }},{{ end }}
 {{~ end ~}}
 );
 
-public record {{ t.Name }}CreateDto(
+public record {{ t.EntityName }}CreateDto(
 {{~ for c in t.Columns ~}}
     {{- if c.Name != t.KeyColumn -}}
     {{ c.ClrType }} {{ c.CsName ?? c.Name }}{{ if !for.last }},{{ end }}
@@ -14,7 +14,7 @@ public record {{ t.Name }}CreateDto(
 {{~ end ~}}
 );
 
-public record {{ t.Name }}UpdateDto(
+public record {{ t.EntityName }}UpdateDto(
 {{~ for c in t.Columns ~}}
     {{- if c.Name != t.KeyColumn -}}
     {{ c.ClrType }} {{ c.CsName ?? c.Name }}{{ if !for.last }},{{ end }}
